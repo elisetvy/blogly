@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}New User Form {% endblock %}
+
+
+{% block content %}
+
+{% if edit %}
+<h1>Edit a user</h1>
+{% else %}
+<h1>Create a user</h1>
+{% endif %}
+
+<form method="POST">
+  <label for="">First Name</label>
+  <input type="text" name="first-name" required value="{% if edit %}{{user.first_name}}{% endif %}">
+
+  <label for="">Last Name</label>
+  <input type="text" name="last-name" required value="{% if edit %}{{user.last_name}}{% endif %}">
+
+  <label for="">Image URL</label>
+  <input type="text" name="image-url" value="{% if edit %}{{user.image_url}}{% endif %}">
+
+  {% if edit %}
+
+  <a class="btn btn-outline-info" href="/users/{{user.id}}">Cancel</a>
+  <button class="btn btn-success">Save</button>
+
+  {% else %}
+
+  <button class="btn btn-success">Add</button>
+
+  {% endif %}
+
+</form>
+
+{% endblock %}
