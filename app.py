@@ -4,7 +4,7 @@ import os
 
 from flask import Flask, redirect, render_template, request
 from flask_debugtoolbar import DebugToolbarExtension
-from models import db, connect_db, User, Post
+from models import db, connect_db, User, Post, DEFAULT_IMAGE_URL
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
@@ -19,6 +19,9 @@ connect_db(app)
 def get_homepage():
     """Redirect to list of users page."""
     return redirect("/users")
+
+
+### USER ROUTES
 
 
 @app.get("/users")
@@ -40,15 +43,11 @@ def add_new_user():
     """Get form info and add new user to DB."""
     first_name = request.form["first-name"]
     last_name = request.form["last-name"]
-    image_url = request.form.get("image-url")
+    image_url = request.form["image-url"] or None
 
-    if not image_url:
-        new_user = User(first_name=first_name,
-                        last_name=last_name)
-    else:
-        new_user = User(first_name=first_name,
-                        last_name=last_name,
-                        image_url=image_url)
+    new_user = User(first_name=first_name,
+                    last_name=last_name,
+                    image_url=image_url)
 
     db.session.add(new_user)
     db.session.commit()
@@ -80,7 +79,7 @@ def update_user(id):
 
     first_name = request.form["first-name"]
     last_name = request.form["last-name"]
-    image_url = request.form["image-url"]
+    image_url = request.form["image-url"] or DEFAULT_IMAGE_URL
 
     user.first_name = first_name
     user.last_name = last_name
@@ -95,10 +94,18 @@ def update_user(id):
 def delete_user(id):
     """Deletes user from database and redirects to homepage."""
     user = User.query.get_or_404(id)
+    posts = user.posts
+
+    for post in posts:
+        db.session.delete(post)
+
     db.session.delete(user)
     db.session.commit()
 
     return redirect("/users")
+
+
+### POST ROUTES HERE
 
 
 @app.get("/users/<int:id>/posts/new")
@@ -125,7 +132,7 @@ def add_post(id):
 
 @app.get("/posts/<int:id>")
 def show_post(id):
-    """Display post."""
+    """Display specific post."""
     post = Post.query.get_or_404(id)
     user = post.user
 

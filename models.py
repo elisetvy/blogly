@@ -1,7 +1,7 @@
 """Models for Blogly."""
 
 from flask_sqlalchemy import SQLAlchemy
-DEFAULT_IMAGE_URL = "https://static.independent.co.uk/s3fs-public/thumbnails/image/2014/01/14/14/google.jpg?width=1200"
+DEFAULT_IMAGE_URL = '/static/images/catdefault.jpeg'
 
 db = SQLAlchemy()
 
