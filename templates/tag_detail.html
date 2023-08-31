@@ -8,13 +8,13 @@
 
 <ul>
   {% for post in posts %}
-  <li><a href="">{{ post.name }}</a></li>
+  <li><a href="/post/{{ post.id }}">{{ post.name }}</a></li>
   {% endfor %}
 </ul>
 
-<a class="btn btn-primary" href="">Edit</a>
+<a class="btn btn-primary" href="/tags/{{ tag.id }}/edit">Edit</a>
 
-<form method="POST" action="">
+<form method="POST" action="/tags/{{ tag.id }}/delete">
   <button class="btn btn-danger">Delete</button>
 </form>
 {% endblock %}

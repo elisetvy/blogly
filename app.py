@@ -174,3 +174,72 @@ def delete_post(id):
     db.session.commit()
 
     return redirect(f"/users/{user.id}")
+
+
+### TAG ROUTES
+
+
+@app.get("/tags")
+def show_tags():
+    """List all tags."""
+    tags = Tag.query.all()
+
+    return render_template("tag_list.html", tags=tags)
+
+@app.get('/tags/<int:id>')
+def show_tag_detail(id):
+    """Show detail about tag."""
+    tag = Tag.query.get_or_404(id)
+    posts = tag.posts
+
+    return render_template('tag_detail.html', tag=tag, posts=posts)
+
+@app.get('/tags/new')
+def show_tag_form():
+    """Show form to add a new tag."""
+
+    return render_template('tag_form.html')
+
+@app.post('/tags/new')
+def add_new_tag():
+    """Process add form, add tag, and redirect to tag list."""
+
+    name = request.form.get('tag-name')
+
+    new_tag = Tag(name=name)
+
+    db.session.add(new_tag)
+    db.session.commit()
+
+    return redirect('/tags')
+
+@app.get('/tags/<int:id>/edit')
+def show_edit_tag_form(id):
+    """Show edit tag form."""
+
+    tag = Tag.query.get_or_404(id)
+
+    return render_template('edit_tag_form.html', tag=tag)
+
+@app.post('/tags/<int:id>/edit')
+def update_tag(id):
+    """Process edit form, edit tag, and redirect to tag list."""
+    name = request.form.get('tag-name')
+
+    tag = Tag.query.get_or_404(id)
+
+    tag.name = name
+
+    db.session.commit()
+
+    return redirect('/tags')
+
+@app.post('/tags/<int:id>/delete')
+def delete_tag(id):
+    """Delete a tag."""
+    tag = Tag.query.get_or_404(id)
+
+    db.session.delete(tag)
+    db.session.commit()
+
+    return redirect('/tags')
