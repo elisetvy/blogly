@@ -120,8 +120,6 @@ class UserViewTestCase(TestCase):
             self.assertEqual(resp.status_code, 200)
             self.assertIn('Jay Catsby', html)
 
-    # TEST MAKE NEW POST, DELETE POST, POSTS DISPLAYS ON USER PAGE
-
     def test_new_post_form(self):
         """Test if new post page renders."""
         with self.client as c:
@@ -139,3 +137,43 @@ class UserViewTestCase(TestCase):
 
             self.assertEqual(resp.status_code, 200)
             self.assertIn('testing blah blah content post blog', html)
+
+    def test_add_post(self):
+        """Test to add post."""
+        with self.client as c:
+            resp = c.post(f'/users/{self.user_id}/posts/new', data={
+                'post-title': 'i am cat',
+                'post-content': 'jay is a cat meow'
+            })
+
+            self.assertEqual(resp.status_code, 302)
+            self.assertEqual(resp.location, f"/users/{self.user_id}")
+
+    def test_add_post_redirect(self):
+        """Test if adding a post redirects to the user page."""
+        with self.client as c:
+            resp = c.post(f'/users/{self.user_id}/posts/new', data={
+                'post-title': 'i am cat',
+                'post-content': 'jay is a cat meow'},
+                follow_redirects=True)
+            html = resp.get_data(as_text=True)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('i am cat', html)
+
+    def test_delete_post(self):
+        """Test delete post."""
+        with self.client as c:
+            resp = c.post(f'/posts/{self.post_id}/delete')
+
+            self.assertEqual(resp.status_code, 302)
+            self.assertEqual(resp.location, f"/users/{self.user_id}")
+
+    def test_delete_post_redirect(self):
+        """Test if deleting a post redirects to user details page."""
+        with self.client as c:
+            resp = c.post(f'/posts/{self.post_id}/delete', follow_redirects=True)
+            html = resp.get_data(as_text=True)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertNotIn('test post post title', html)
