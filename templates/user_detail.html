@@ -22,4 +22,14 @@
   </button>
 </form>
 
+<h3>Posts</h3>
+
+<ul>
+  {% for post in posts %}
+  <li><a href="">{{ post.title }} </a></li>
+  {% endfor %}
+</ul>
+
+<a href="">Add Post</a>
+
 {% endblock %}
