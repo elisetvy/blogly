@@ -5,12 +5,14 @@ DEFAULT_IMAGE_URL = "https://static.independent.co.uk/s3fs-public/thumbnails/ima
 
 db = SQLAlchemy()
 
+
 def connect_db(app):
     """Connect to database."""
 
     app.app_context().push()
     db.app = app
     db.init_app(app)
+
 
 class User(db.Model):
     """Users."""
@@ -36,38 +38,41 @@ class User(db.Model):
     image_url = db.Column(
         db.Text,
         nullable=True,
-        default = DEFAULT_IMAGE_URL
+        default=DEFAULT_IMAGE_URL
     )
 
-    class Post(db.model):
-        """Posts."""
+    posts = db.relationship("Post", backref="user")
 
-        __tablename__ = "posts"
 
-        id = db.Column(
+class Post(db.Model):
+    """Posts."""
+
+    __tablename__ = "posts"
+
+    id = db.Column(
         db.Integer,
         primary_key=True,
         autoincrement=True
-        )
+    )
 
-        title = db.Column(
+    title = db.Column(
         db.String(75),
         nullable=False
-        )
+    )
 
-        content = db.Column(
+    content = db.Column(
         db.Text,
         nullable=False
-        )
+    )
 
-        created_at = db.Column(
+    created_at = db.Column(
         db.DateTime,
         nullable=False,
         default=db.func.now()
-        )
+    )
 
-        user_id = db.Column(
+    user_id = db.Column(
         db.Integer,
         db.ForeignKey("users.id"),
         nullable=False
-        )
+    )

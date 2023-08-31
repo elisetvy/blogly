@@ -26,10 +26,10 @@
 
 <ul>
   {% for post in posts %}
-  <li><a href="">{{ post.title }} </a></li>
+  <li><a href="/posts/{{ post.id }}">{{ post.title }} </a></li>
   {% endfor %}
 </ul>
 
-<a href="">Add Post</a>
+<a class="btn btn-primary" href="/users/{{ user.id }}/posts/new">Add Post</a>
 
 {% endblock %}

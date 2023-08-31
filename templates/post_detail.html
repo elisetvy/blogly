@@ -8,17 +8,17 @@
 
 <p>{{ post.content }}</p>
 
-<em>By {{ user.first_name }} {{ user.last_name}}</em>
+<em>By {{ user.first_name }} {{ user.last_name }}</em>
 
 <form>
   <button class="btn btn-outline-primary">Cancel</button>
 </form>
 
-<form>
+<form action="/posts/{{ post.id }}/edit">
   <button class="btn btn-primary">Edit</button>
 </form>
 
-<form method="POST" action="">
+<form method="POST" action="/posts/{{ post.id }}/delete">
   <button class="btn btn-danger">Delete</button>
 </form>
 
