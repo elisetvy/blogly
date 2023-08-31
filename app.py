@@ -40,7 +40,7 @@ def add_new_user():
     """Get form info and add new user to DB."""
     first_name = request.form["first-name"]
     last_name = request.form["last-name"]
-    image_url = request.form["image-url"]
+    image_url = request.form.get("image-url")
 
     if not image_url:
         new_user = User(first_name=first_name,
@@ -143,7 +143,7 @@ def show_post_edit_form(id):
 
 @app.post("/posts/<int:id>/edit")
 def update_post(id):
-
+    """Updates post in DB and redirects to post detail page."""
     title = request.form["post-title"]
     content = request.form["post-content"]
 
@@ -160,7 +160,7 @@ def update_post(id):
 
 @app.post("/posts/<int:id>/delete")
 def delete_post(id):
-
+    """Deletes post from DB and redirects to user detail page."""
     post = Post.query.get_or_404(id)
     user = post.user
 
