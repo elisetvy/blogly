@@ -78,7 +78,7 @@ class UserViewTestCase(TestCase):
             html = resp.get_data(as_text=True)
 
             self.assertEqual(resp.status_code, 200)
-            self.assertIn('<img', html)
+            self.assertIn('test1_first', html)
             self.assertIn('Edit', html)
             self.assertIn("Delete", html)
 

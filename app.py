@@ -33,6 +33,7 @@ def show_users():
 
 @app.get("/users/new")
 def show_new_user_form():
+    """Show new user form."""
     return render_template("user_form.html")
 
 
@@ -75,7 +76,7 @@ def edit_user(id):
 
     first_name = request.form["first-name"]
     last_name = request.form["last-name"]
-    image_url = request.form.get("image-url")
+    image_url = request.form["image-url"]
 
     user.first_name = first_name
     user.last_name = last_name
@@ -88,6 +89,7 @@ def edit_user(id):
 
 @app.post("/users/<int:id>/delete")
 def delete_user(id):
+    """Deletes user from database and redirects to homepage."""
     user = User.query.get(id)
     db.session.delete(user)
     db.session.commit()
