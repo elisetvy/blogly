@@ -5,6 +5,7 @@ import os
 from flask import Flask, redirect, render_template, request
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User, Post, Tag, PostTag, DEFAULT_IMAGE_URL
+from sqlalchemy import desc
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
@@ -18,7 +19,9 @@ connect_db(app)
 @app.get("/")
 def get_homepage():
     """Redirect to list of users page."""
-    return redirect("/users")
+    posts = Post.query.order_by(desc('created_at')).limit(5).all()
+
+    return render_template("homepage.html", posts=posts, )
 
 
 # USER ROUTES
@@ -29,7 +32,7 @@ def show_users():
     """Show user listing."""
     users = User.query.all()
 
-    return render_template("home.html", users=users)
+    return render_template("user_list.html", users=users)
 
 
 @app.get("/users/new")
@@ -113,7 +116,9 @@ def show_post_form(id):
     """Display new post form."""
     user = User.query.get_or_404(id)
 
-    return render_template("new_post_form.html", user=user)
+    tags = Tag.query.all()
+
+    return render_template("new_post_form.html", user=user, tags=tags)
 
 
 @app.post("/users/<int:id>/posts/new")
@@ -122,7 +127,13 @@ def add_post(id):
     title = request.form["post-title"]
     content = request.form["post-content"]
 
+    tag_ids = request.form.getlist('tag')
+
     new_post = Post(title=title, content=content, user_id=id)
+
+    for tag_id in tag_ids:
+        tag = Tag.query.get_or_404(int(tag_id))
+        new_post.tags.append(tag)
 
     db.session.add(new_post)
     db.session.commit()
@@ -135,8 +146,9 @@ def show_post(id):
     """Display specific post."""
     post = Post.query.get_or_404(id)
     user = post.user
+    tags = post.tags
 
-    return render_template("post_detail.html", user=user, post=post)
+    return render_template("post_detail.html", user=user, post=post, tags=tags)
 
 
 @app.get("/posts/<int:id>/edit")
@@ -145,7 +157,9 @@ def show_post_edit_form(id):
     post = Post.query.get_or_404(id)
     user = post.user
 
-    return render_template("edit_post.html", user=user, post=post)
+    tags = Tag.query.all()
+
+    return render_template("edit_post.html", user=user, post=post, tags=tags)
 
 
 @app.post("/posts/<int:id>/edit")
@@ -154,7 +168,15 @@ def update_post(id):
     title = request.form["post-title"]
     content = request.form["post-content"]
 
+    tag_ids = request.form.getlist('tag')
+
     post = Post.query.get_or_404(id)
+
+    post.tags = []
+
+    for tag_id in tag_ids:
+        tag = Tag.query.get_or_404(int(tag_id))
+        post.tags.append(tag)
 
     post.title = title
     post.content = content

@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Blogly{% endblock %}
+
+{% block content %}
+
+<h1>Blogly Recent Posts</h1>
+
+{% for post in posts %}
+<h3>{{ post.title }}</h3>
+<p>{{ post.content }}</p>
+<p>By {{ post.user.first_name }} {{ post.user.last_name }} on {{ post.created_at }}</p>
+{% if post.tags %}
+  <b>Tags: </b>
+  {% for tag in post.tags %}
+  <a href="/tags/{{ tag.id }}">{{ tag.name }}</a>
+  {% endfor %}
+{% endif %}
+{% endfor %}
+
+
+<a class="btn btn-primary" href="/users">Users</a>
+<a class="btn btn-primary" href="/tags">Tags</a>
+
+{% endblock %}

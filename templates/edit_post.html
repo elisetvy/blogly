@@ -17,9 +17,9 @@
   <!-- try putting jinja in the input tag itself-->
 
   {% if tag in post.tags %}
-  <input name="{{ tag.name }}" type="checkbox" checked>
+  <input name="tag" type="checkbox" value="{{ tag.id }}" checked>
   {% else %}
-  <input name="{{ tag.name }}" type="checkbox">
+  <input name="tag" type="checkbox" value="{{ tag.id }}">
   {% endif %}
 
   <label for="{{ tag.name }}">{{ tag.name }}</label>
