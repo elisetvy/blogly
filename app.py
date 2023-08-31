@@ -12,8 +12,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
 
-DEFAULT_IMAGE_URL = "https://static.independent.co.uk/s3fs-public/thumbnails/image/2014/01/14/14/google.jpg?width=1200"
-
 connect_db(app)
 
 
@@ -42,10 +40,17 @@ def add_new_user():
     """Get form info and add new user to DB."""
     first_name = request.form["first-name"]
     last_name = request.form["last-name"]
-    image_url = request.form.get("image-url") or DEFAULT_IMAGE_URL
-    new_user = User(first_name=first_name,
+    image_url = request.form.get("image-url")
+
+    if not image_url:
+        new_user = User(first_name=first_name,
                     last_name=last_name,
-                    image_url=image_url)
+                    )
+    else:
+        new_user = User(first_name=first_name,
+                    last_name=last_name,
+                    image_url=image_url
+                    )
 
     db.session.add(new_user)
     db.session.commit()
@@ -56,7 +61,7 @@ def add_new_user():
 @app.get("/users/<int:id>")
 def show_user_details(id):
     """Show user details page."""
-    user = User.query.get(id)
+    user = User.query.get_or_404(id)
 
     return render_template("user_detail.html", user=user)
 
@@ -64,15 +69,15 @@ def show_user_details(id):
 @app.get("/users/<int:id>/edit")
 def show_user_edit_page(id):
     """Show edit form for user details."""
-    user = User.query.get(id)
+    user = User.query.get_or_404(id)
 
     return render_template("user_form.html", user=user, edit=True)
 
 
 @app.post("/users/<int:id>/edit")
-def edit_user(id):
+def update_user(id):
     """Update user info in DB and redirect to homepage."""
-    user = User.query.get(id)
+    user = User.query.get_or_404(id)
 
     first_name = request.form["first-name"]
     last_name = request.form["last-name"]
@@ -90,7 +95,7 @@ def edit_user(id):
 @app.post("/users/<int:id>/delete")
 def delete_user(id):
     """Deletes user from database and redirects to homepage."""
-    user = User.query.get(id)
+    user = User.query.get_or_404(id)
     db.session.delete(user)
     db.session.commit()
 
