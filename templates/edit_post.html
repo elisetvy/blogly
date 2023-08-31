@@ -12,6 +12,19 @@
   <label for="post-content">Content</label>
   <textarea name="post-content">{{ post.content }}</textarea>
 
+  {% for tag in tags %}
+
+  <!-- try putting jinja in the input tag itself-->
+
+  {% if tag in post.tags %}
+  <input name="{{ tag.name }}" type="checkbox" checked>
+  {% else %}
+  <input name="{{ tag.name }}" type="checkbox">
+  {% endif %}
+
+  <label for="{{ tag.name }}">{{ tag.name }}</label>
+  {% endfor %}
+
   <a class="btn btn-outline-info" href="/users/{{user.id}}">Cancel</a>
   <button class="btn btn-success">Edit</button>
 </form>

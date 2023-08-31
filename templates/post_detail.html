@@ -10,6 +10,12 @@
 
 <em>By {{ user.first_name }} {{ user.last_name }}</em>
 
+<b>Tags:
+  {% for tag in tags %}
+  <a href="">{{ tag.name }}</a>
+  {% endfor %}
+</b>
+
 <form>
   <button class="btn btn-outline-primary">Cancel</button>
 </form>

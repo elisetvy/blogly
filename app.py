@@ -4,7 +4,7 @@ import os
 
 from flask import Flask, redirect, render_template, request
 from flask_debugtoolbar import DebugToolbarExtension
-from models import db, connect_db, User, Post, DEFAULT_IMAGE_URL
+from models import db, connect_db, User, Post, Tag, PostTag, DEFAULT_IMAGE_URL
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
@@ -21,7 +21,7 @@ def get_homepage():
     return redirect("/users")
 
 
-### USER ROUTES
+# USER ROUTES
 
 
 @app.get("/users")
@@ -105,7 +105,7 @@ def delete_user(id):
     return redirect("/users")
 
 
-### POST ROUTES HERE
+# POST ROUTES HERE
 
 
 @app.get("/users/<int:id>/posts/new")
@@ -162,7 +162,6 @@ def update_post(id):
     db.session.commit()
 
     return redirect(f"/posts/{id}")
-
 
 
 @app.post("/posts/<int:id>/delete")
