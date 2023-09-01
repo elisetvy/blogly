@@ -101,7 +101,7 @@ class UserViewTestCase(TestCase):
             resp = c.post('/users/new', data={
                 'first-name': 'Jay',
                 'last-name': 'Catsby',
-                'image-url': None
+                'image-url': ''
             })
 
             self.assertEqual(resp.status_code, 302)
@@ -113,7 +113,7 @@ class UserViewTestCase(TestCase):
             resp = c.post('/users/new', data={
                 'first-name': 'Jay',
                 'last-name': 'Catsby',
-                'image-url': None
+                'image-url': ''
             }, follow_redirects=True)
             html = resp.get_data(as_text=True)
 

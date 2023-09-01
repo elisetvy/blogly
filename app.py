@@ -126,15 +126,12 @@ def add_post(id):
     """Add post to DB and redirect to user detail page."""
     title = request.form["post-title"]
     content = request.form["post-content"]
-
     tag_ids = request.form.getlist('tag')
 
     new_post = Post(title=title, content=content, user_id=id)
 
-    for tag_id in tag_ids:
-        tag = Tag.query.get_or_404(int(tag_id))
-        new_post.tags.append(tag)
-
+    new_post.tags = [Tag.query.get_or_404(int(tag_id)) for tag_id in tag_ids]
+    
     db.session.add(new_post)
     db.session.commit()
 
@@ -167,19 +164,13 @@ def update_post(id):
     """Updates post in DB and redirects to post detail page."""
     title = request.form["post-title"]
     content = request.form["post-content"]
-
     tag_ids = request.form.getlist('tag')
 
     post = Post.query.get_or_404(id)
 
-    post.tags = []
-
-    for tag_id in tag_ids:
-        tag = Tag.query.get_or_404(int(tag_id))
-        post.tags.append(tag)
-
     post.title = title
     post.content = content
+    post.tags = [Tag.query.get_or_404(int(tag_id)) for tag_id in tag_ids]
 
     db.session.commit()
 
@@ -192,13 +183,16 @@ def delete_post(id):
     post = Post.query.get_or_404(id)
     user = post.user
 
+    for tag in post.post_tags:
+        db.session.delete(tag)
+
     db.session.delete(post)
     db.session.commit()
 
     return redirect(f"/users/{user.id}")
 
 
-### TAG ROUTES
+# TAG ROUTES
 
 
 @app.get("/tags")
@@ -208,6 +202,7 @@ def show_tags():
 
     return render_template("tag_list.html", tags=tags)
 
+
 @app.get('/tags/<int:id>')
 def show_tag_detail(id):
     """Show detail about tag."""
@@ -216,16 +211,17 @@ def show_tag_detail(id):
 
     return render_template('tag_detail.html', tag=tag, posts=posts)
 
+
 @app.get('/tags/new')
 def show_tag_form():
     """Show form to add a new tag."""
 
     return render_template('tag_form.html')
 
+
 @app.post('/tags/new')
 def add_new_tag():
     """Process add form, add tag, and redirect to tag list."""
-
     name = request.form.get('tag-name')
 
     new_tag = Tag(name=name)
@@ -235,13 +231,14 @@ def add_new_tag():
 
     return redirect('/tags')
 
+
 @app.get('/tags/<int:id>/edit')
 def show_edit_tag_form(id):
     """Show edit tag form."""
-
     tag = Tag.query.get_or_404(id)
 
     return render_template('edit_tag_form.html', tag=tag)
+
 
 @app.post('/tags/<int:id>/edit')
 def update_tag(id):
@@ -256,10 +253,14 @@ def update_tag(id):
 
     return redirect('/tags')
 
+
 @app.post('/tags/<int:id>/delete')
 def delete_tag(id):
     """Delete a tag."""
     tag = Tag.query.get_or_404(id)
+
+    for post_tag in tag.post_tags:
+        db.session.delete(post_tag)
 
     db.session.delete(tag)
     db.session.commit()
